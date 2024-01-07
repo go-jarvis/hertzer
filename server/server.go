@@ -3,14 +3,13 @@ package server
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/config"
-	"github.com/go-jarvis/herts/route"
 )
 
 type Config struct {
 	Listen string `env:""`
 
 	h *server.Hertz
-	r *route.RouterGroup
+	r *RouterGroup
 
 	opts []config.Option
 }
@@ -24,8 +23,19 @@ func (s *Config) SetDefaults() {
 	s.WithOptions(hp)
 }
 
+func (s *Config) defaultRouterGroup() {
+	if s.r == nil {
+		s.r = NewRouterGroup("/")
+	}
+}
+
 func (s *Config) initialize() {
+
 	s.h = server.Default(s.opts...)
+
+	s.defaultRouterGroup()
+	s.r.r = s.h.Group("/")
+	s.r.initialize()
 }
 
 func (s *Config) Run() error {
@@ -41,4 +51,22 @@ func (s *Config) WithOptions(opts ...config.Option) {
 	}
 
 	s.opts = append(s.opts, opts...)
+}
+
+func (s *Config) Use(middleware ...HandlerFunc) {
+	s.defaultRouterGroup()
+
+	s.r.Use(middleware...)
+}
+
+func (s *Config) Handle(opers ...Operator) {
+	s.defaultRouterGroup()
+
+	s.r.Handle(opers...)
+}
+
+func (s *Config) AppendGroup(group ...*RouterGroup) {
+	s.defaultRouterGroup()
+
+	s.r.AppendGroup(group...)
 }
