@@ -5,7 +5,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/config"
 )
 
-type Config struct {
+type Server struct {
 	Listen string `env:""`
 
 	h *server.Hertz
@@ -14,7 +14,7 @@ type Config struct {
 	opts []config.Option
 }
 
-func (s *Config) SetDefaults() {
+func (s *Server) SetDefaults() {
 	if s.Listen == "" {
 		s.Listen = ":8080"
 	}
@@ -23,13 +23,13 @@ func (s *Config) SetDefaults() {
 	s.WithOptions(hp)
 }
 
-func (s *Config) defaultRouterGroup() {
+func (s *Server) defaultRouterGroup() {
 	if s.r == nil {
 		s.r = NewRouterGroup("/")
 	}
 }
 
-func (s *Config) initialize() {
+func (s *Server) initialize() {
 
 	s.h = server.Default(s.opts...)
 
@@ -38,14 +38,14 @@ func (s *Config) initialize() {
 	s.r.initialize()
 }
 
-func (s *Config) Run() error {
+func (s *Server) Run() error {
 	s.SetDefaults()
 	s.initialize()
 
 	return s.h.Run()
 }
 
-func (s *Config) WithOptions(opts ...config.Option) {
+func (s *Server) WithOptions(opts ...config.Option) {
 	if len(s.opts) == 0 {
 		s.opts = make([]config.Option, 0)
 	}
@@ -53,19 +53,19 @@ func (s *Config) WithOptions(opts ...config.Option) {
 	s.opts = append(s.opts, opts...)
 }
 
-func (s *Config) Use(middleware ...HandlerFunc) {
+func (s *Server) Use(middleware ...HandlerFunc) {
 	s.defaultRouterGroup()
 
 	s.r.Use(middleware...)
 }
 
-func (s *Config) Handle(opers ...Operator) {
+func (s *Server) Handle(opers ...Operator) {
 	s.defaultRouterGroup()
 
 	s.r.Handle(opers...)
 }
 
-func (s *Config) AppendGroup(group ...*RouterGroup) {
+func (s *Server) AppendGroup(group ...*RouterGroup) {
 	s.defaultRouterGroup()
 
 	s.r.AppendGroup(group...)

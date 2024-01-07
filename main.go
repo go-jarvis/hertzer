@@ -10,11 +10,20 @@ import (
 
 func main() {
 
-	s := &server.Config{
+	s := &server.Server{
 		Listen: ":8081",
 	}
 
 	s.Handle(&Ping{})
+
+	v1 := server.NewRouterGroup("/v1")
+	v2 := server.NewRouterGroup("/v2")
+
+	v2.Handle(&Ping{})
+	v1.Handle(&Ping{})
+
+	s.AppendGroup(v1)
+	v1.AppendGroup(v2)
 
 	err := s.Run()
 	if err != nil {

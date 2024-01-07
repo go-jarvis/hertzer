@@ -12,6 +12,8 @@ type RouterGroup struct {
 	path string
 	r    *route.RouterGroup
 
+	parent *RouterGroup // parent RouterGroup
+
 	subgroups   []*RouterGroup
 	middlewares []HandlerFunc
 	operators   []Operator
@@ -25,7 +27,7 @@ func NewRouterGroup(path string) *RouterGroup {
 
 func (r *RouterGroup) initialize() {
 	if r.r == nil {
-		return
+		r.r = r.parent.r.Group(r.path)
 	}
 
 	for _, m := range r.middlewares {
@@ -34,8 +36,12 @@ func (r *RouterGroup) initialize() {
 
 	r.handle(r.operators...)
 
-	for _, g := range r.subgroups {
-		g.initialize()
+	for _, sub := range r.subgroups {
+		// set parent as self
+		sub.parent = r
+
+		// initialize subgroups
+		sub.initialize()
 	}
 }
 
@@ -49,11 +55,12 @@ func (r *RouterGroup) Use(middleware ...HandlerFunc) {
 }
 
 // AppendGroup register subgroups
-func (r *RouterGroup) AppendGroup(group ...*RouterGroup) {
+func (r *RouterGroup) AppendGroup(groups ...*RouterGroup) {
 	if len(r.subgroups) == 0 {
 		r.subgroups = make([]*RouterGroup, 0)
 	}
-	r.subgroups = append(r.subgroups, group...)
+
+	r.subgroups = append(r.subgroups, groups...)
 }
 
 // Handle register Operators
