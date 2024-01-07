@@ -6,15 +6,22 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
-type HandlerFunc = app.HandlerFunc
 type Operator interface {
 	Handle(ctx context.Context, arc *app.RequestContext) (any, error)
 }
 
-// type MethodOperator interface {
-// 	Method() string
-// }
+type PreHandlersOperator interface {
+	PreHandlers() []app.HandlerFunc
+}
 
-type Router interface {
+type PostHandlersOperator interface {
+	PostHandlers() []app.HandlerFunc
+}
+
+type MethodOperator interface {
+	Method() string
+}
+
+type RouteOperator interface {
 	Route() string
 }

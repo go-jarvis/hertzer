@@ -2,28 +2,29 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/go-jarvis/herts"
 	"github.com/go-jarvis/herts/pkg/httpx"
-	"github.com/go-jarvis/herts/server"
 )
 
 func main() {
 
-	s := &server.Server{
+	s := &herts.Server{
 		Listen: ":8081",
 	}
 
 	s.Handle(&Ping{})
 
-	v1 := server.NewRouterGroup("/v1")
-	v2 := server.NewRouterGroup("/v2")
+	v1 := herts.NewRouterGroup("/v1")
+	v2 := herts.NewRouterGroup("/v2")
 
 	v2.Handle(&Ping{})
 	v1.Handle(&Ping{})
 
-	s.AppendGroup(v1)
-	v1.AppendGroup(v2)
+	s.AddGroup(v1)
+	v1.AddGroup(v2)
 
 	err := s.Run()
 	if err != nil {
@@ -55,5 +56,30 @@ type Address struct {
 // }
 
 func (p *Ping) Handle(ctx context.Context, arc *app.RequestContext) (any, error) {
+	fmt.Println("handle ping")
 	return *p, nil
+}
+
+func (Ping) PreHandlers() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		prefunc(),
+	}
+}
+
+func (Ping) PostHandlers() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		postfunc(),
+	}
+}
+
+func prefunc() app.HandlerFunc {
+	return func(ctx context.Context, arc *app.RequestContext) {
+		fmt.Println("pre handler")
+	}
+}
+
+func postfunc() app.HandlerFunc {
+	return func(ctx context.Context, arc *app.RequestContext) {
+		fmt.Println("post handler")
+	}
 }

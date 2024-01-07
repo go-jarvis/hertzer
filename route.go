@@ -1,4 +1,4 @@
-package server
+package herts
 
 import (
 	"context"
@@ -19,7 +19,7 @@ type RouterGroup struct {
 	parent *RouterGroup // parent RouterGroup
 
 	subgroups   []*RouterGroup
-	middlewares []operator.HandlerFunc
+	middlewares []app.HandlerFunc
 	operators   []operator.Operator
 }
 
@@ -50,16 +50,16 @@ func (r *RouterGroup) initialize() {
 }
 
 // Use register Middlewares
-func (r *RouterGroup) Use(middleware ...operator.HandlerFunc) {
+func (r *RouterGroup) Use(middleware ...app.HandlerFunc) {
 	if len(r.middlewares) == 0 {
-		r.middlewares = make([]operator.HandlerFunc, 0)
+		r.middlewares = make([]app.HandlerFunc, 0)
 	}
 
 	r.middlewares = append(r.middlewares, middleware...)
 }
 
-// AppendGroup register subgroups
-func (r *RouterGroup) AppendGroup(groups ...*RouterGroup) {
+// AddGroup register subgroups
+func (r *RouterGroup) AddGroup(groups ...*RouterGroup) {
 	if len(r.subgroups) == 0 {
 		r.subgroups = make([]*RouterGroup, 0)
 	}
@@ -75,36 +75,57 @@ func (r *RouterGroup) Handle(opers ...operator.Operator) {
 	r.operators = append(r.operators, opers...)
 }
 
+func (r *RouterGroup) handlerFunc(oper operator.Operator) app.HandlerFunc {
+	return func(ctx context.Context, arc *app.RequestContext) {
+
+		// set default content-type
+		v := arc.Request.Header.Get("Content-Type")
+		if v == "" {
+			arc.Request.Header.Set("Content-Type", "application/json")
+		}
+
+		// bind data
+		err := arc.Bind(oper)
+		if err != nil {
+			arc.JSON(consts.StatusBadRequest, err.Error())
+			return
+		}
+
+		ret, err := oper.Handle(ctx, arc)
+		if err != nil {
+			arc.JSON(consts.StatusInternalServerError, err.Error())
+			return
+		}
+		arc.JSON(consts.StatusOK, ret)
+	}
+}
+
 func (r *RouterGroup) handle(opers ...operator.Operator) {
 	for _, oper := range opers {
-		fn := func(ctx context.Context, arc *app.RequestContext) {
-			// create a deepcopy
-			oper := operator.DeepCopy(oper)
-
-			// set default content-type
-			v := arc.Request.Header.Get("Content-Type")
-			if v == "" {
-				arc.Request.Header.Set("Content-Type", "application/json")
-			}
-
-			// bind data
-			err := arc.Bind(oper)
-			if err != nil {
-				arc.JSON(consts.StatusBadRequest, err.Error())
-				return
-			}
-
-			ret, err := oper.Handle(ctx, arc)
-			if err != nil {
-				arc.JSON(consts.StatusInternalServerError, err.Error())
-				return
-			}
-			arc.JSON(consts.StatusOK, ret)
-		}
+		// create a deepcopy
+		oper := operator.DeepCopy(oper)
 
 		// get method and path
 		m, p := getHttpBasic(oper)
-		r.r.Handle(m, p, fn)
+
+		// initialize handler hfns
+		hfns := []app.HandlerFunc{}
+
+		// get pre handler funcs if exist
+		if pre, ok := oper.(operator.PreHandlersOperator); ok {
+			hfns = append(hfns, pre.PreHandlers()...)
+		}
+
+		// main: registery handler func
+		hfn := r.handlerFunc(oper)
+		hfns = append(hfns, hfn)
+
+		// get post handler funcs if exist
+		if post, ok := oper.(operator.PostHandlersOperator); ok {
+			hfns = append(hfns, post.PostHandlers()...)
+		}
+
+		r.r.Handle(m, p, hfns...)
 	}
 }
 
@@ -114,7 +135,7 @@ func getHttpBasic(oper any) (method, path string) {
 		method = oper.Method()
 	}
 
-	if oper, ok := oper.(operator.Router); ok {
+	if oper, ok := oper.(operator.RouteOperator); ok {
 		path = oper.Route()
 	}
 

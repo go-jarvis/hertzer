@@ -1,6 +1,7 @@
-package server
+package herts
 
 import (
+	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/config"
 	"github.com/go-jarvis/herts/pkg/operator"
@@ -56,7 +57,7 @@ func (s *Server) WithOptions(opts ...config.Option) {
 	s.opts = append(s.opts, opts...)
 }
 
-func (s *Server) Use(middleware ...operator.HandlerFunc) {
+func (s *Server) Use(middleware ...app.HandlerFunc) {
 	s.defaultRouterGroup()
 
 	s.r.Use(middleware...)
@@ -68,8 +69,8 @@ func (s *Server) Handle(opers ...operator.Operator) {
 	s.r.Handle(opers...)
 }
 
-func (s *Server) AppendGroup(group ...*RouterGroup) {
+func (s *Server) AddGroup(group ...*RouterGroup) {
 	s.defaultRouterGroup()
 
-	s.r.AppendGroup(group...)
+	s.r.AddGroup(group...)
 }
