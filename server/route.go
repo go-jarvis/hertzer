@@ -8,6 +8,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/cloudwego/hertz/pkg/route"
 	"github.com/go-jarvis/herts/pkg/httpx"
+	"github.com/go-jarvis/herts/pkg/operator"
 	"github.com/go-jarvis/herts/pkg/reflectx"
 )
 
@@ -18,8 +19,8 @@ type RouterGroup struct {
 	parent *RouterGroup // parent RouterGroup
 
 	subgroups   []*RouterGroup
-	middlewares []HandlerFunc
-	operators   []Operator
+	middlewares []operator.HandlerFunc
+	operators   []operator.Operator
 }
 
 func NewRouterGroup(path string) *RouterGroup {
@@ -49,9 +50,9 @@ func (r *RouterGroup) initialize() {
 }
 
 // Use register Middlewares
-func (r *RouterGroup) Use(middleware ...HandlerFunc) {
+func (r *RouterGroup) Use(middleware ...operator.HandlerFunc) {
 	if len(r.middlewares) == 0 {
-		r.middlewares = make([]HandlerFunc, 0)
+		r.middlewares = make([]operator.HandlerFunc, 0)
 	}
 
 	r.middlewares = append(r.middlewares, middleware...)
@@ -67,22 +68,26 @@ func (r *RouterGroup) AppendGroup(groups ...*RouterGroup) {
 }
 
 // Handle register Operators
-func (r *RouterGroup) Handle(opers ...Operator) {
+func (r *RouterGroup) Handle(opers ...operator.Operator) {
 	if len(r.operators) == 0 {
-		r.operators = make([]Operator, 0)
+		r.operators = make([]operator.Operator, 0)
 	}
 	r.operators = append(r.operators, opers...)
 }
 
-func (r *RouterGroup) handle(opers ...Operator) {
+func (r *RouterGroup) handle(opers ...operator.Operator) {
 	for _, oper := range opers {
 		fn := func(ctx context.Context, arc *app.RequestContext) {
+			// create a deepcopy
+			oper := operator.DeepCopy(oper)
 
+			// set default content-type
 			v := arc.Request.Header.Get("Content-Type")
 			if v == "" {
 				arc.Request.Header.Set("Content-Type", "application/json")
 			}
 
+			// bind data
 			err := arc.Bind(oper)
 			if err != nil {
 				arc.JSON(consts.StatusBadRequest, err.Error())
@@ -97,6 +102,7 @@ func (r *RouterGroup) handle(opers ...Operator) {
 			arc.JSON(consts.StatusOK, ret)
 		}
 
+		// get method and path
 		m, p := getHttpBasic(oper)
 		r.r.Handle(m, p, fn)
 	}
@@ -108,7 +114,7 @@ func getHttpBasic(oper any) (method, path string) {
 		method = oper.Method()
 	}
 
-	if oper, ok := oper.(Router); ok {
+	if oper, ok := oper.(operator.Router); ok {
 		path = oper.Route()
 	}
 

@@ -1,9 +1,9 @@
 
 
 ### GET
-GET http://127.0.0.1:8081/ping/zhangsan?age=18
+POST http://127.0.0.1:8081/ping/zhangsan?age=18
 AuthToken: token123456
-Content-Type: application/json
+# Content-Type: application/json
 
 {
     "score": 100,

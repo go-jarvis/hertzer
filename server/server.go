@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/config"
+	"github.com/go-jarvis/herts/pkg/operator"
 )
 
 type Server struct {
@@ -55,13 +56,13 @@ func (s *Server) WithOptions(opts ...config.Option) {
 	s.opts = append(s.opts, opts...)
 }
 
-func (s *Server) Use(middleware ...HandlerFunc) {
+func (s *Server) Use(middleware ...operator.HandlerFunc) {
 	s.defaultRouterGroup()
 
 	s.r.Use(middleware...)
 }
 
-func (s *Server) Handle(opers ...Operator) {
+func (s *Server) Handle(opers ...operator.Operator) {
 	s.defaultRouterGroup()
 
 	s.r.Handle(opers...)
