@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/go-jarvis/herts"
 	"github.com/go-jarvis/herts/pkg/httpx"
 )
@@ -14,6 +15,13 @@ func main() {
 	s := &herts.Server{
 		Listen: ":8081",
 	}
+
+	s.Use(prefunc(), postfunc())
+
+	s.WithOptions(
+		server.WithBasePath("/api"),
+		server.WithIdleTimeout(10),
+	)
 
 	s.Handle(&Ping{})
 
