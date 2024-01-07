@@ -74,6 +74,18 @@ func (r *RouterGroup) Handle(opers ...Operator) {
 func (r *RouterGroup) handle(opers ...Operator) {
 	for _, oper := range opers {
 		fn := func(ctx context.Context, arc *app.RequestContext) {
+
+			v := arc.Request.Header.Get("Content-Type")
+			if v == "" {
+				arc.Request.Header.Set("Content-Type", "application/json")
+			}
+
+			err := arc.Bind(oper)
+			if err != nil {
+				arc.JSON(consts.StatusBadRequest, err.Error())
+				return
+			}
+
 			ret, err := oper.Handle(ctx, arc)
 			if err != nil {
 				arc.JSON(consts.StatusInternalServerError, err.Error())

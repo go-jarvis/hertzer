@@ -32,10 +32,20 @@ func main() {
 }
 
 type Ping struct {
+	Name      string  `path:"name"`
+	Age       int     `query:"age"`
+	AuthToken string  `header:"AuthToken"`
+	Address   Address `json:"address"`
+	Score     int     `json:"score" form:"score"`
+}
+
+type Address struct {
+	Home   string `json:"home" form:"home"`
+	School string `json:"school"`
 }
 
 func (Ping) Route() string {
-	return "/ping"
+	return "/ping/:name"
 }
 
 func (Ping) Method() string {
@@ -43,5 +53,5 @@ func (Ping) Method() string {
 }
 
 func (p *Ping) Handle(ctx context.Context, arc *app.RequestContext) (any, error) {
-	return "pong", nil
+	return *p, nil
 }

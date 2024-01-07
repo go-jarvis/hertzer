@@ -20,7 +20,9 @@ func (s *Server) SetDefaults() {
 	}
 
 	hp := server.WithHostPorts(s.Listen)
-	s.WithOptions(hp)
+	s.WithOptions(
+		hp,
+	)
 }
 
 func (s *Server) defaultRouterGroup() {

@@ -1,10 +1,22 @@
 
 
 ### GET
-GET http://127.0.0.1:8081/ping
+GET http://127.0.0.1:8081/ping/zhangsan?age=18
+AuthToken: token123456
+Content-Type: application/json
+
+{
+    "score": 100,
+    "address": {
+        "home":"beijing",
+        "school":"hainan"
+    }
+}
 
 ### GET 
-GET http://127.0.0.1:8081/v1/ping
+GET http://127.0.0.1:8081/v1/ping/wangwu
+Content-Type: application/x-www-form-urlencoded
+
 
 ### GET
 GET http://127.0.0.1:8081/v1/v2/ping
