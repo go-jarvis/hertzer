@@ -9,6 +9,12 @@ import (
 type HandlerFunc = app.HandlerFunc
 type Operator interface {
 	Handle(ctx context.Context, arc *app.RequestContext) (any, error)
+}
+
+// type MethodOperator interface {
+// 	Method() string
+// }
+
+type Router interface {
 	Route() string
-	Method() string
 }

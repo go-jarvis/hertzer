@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/go-jarvis/herts/pkg/httpx"
 	"github.com/go-jarvis/herts/server"
 )
 
@@ -32,6 +32,8 @@ func main() {
 }
 
 type Ping struct {
+	httpx.MethodPost `route:"/ping/:name"`
+
 	Name      string  `path:"name"`
 	Age       int     `query:"age"`
 	AuthToken string  `header:"AuthToken"`
@@ -44,13 +46,13 @@ type Address struct {
 	School string `json:"school"`
 }
 
-func (Ping) Route() string {
-	return "/ping/:name"
-}
+// func (Ping) Route() string {
+// 	return "/ping/:name"
+// }
 
-func (Ping) Method() string {
-	return http.MethodGet
-}
+// func (Ping) Method() string {
+// 	return http.MethodGet
+// }
 
 func (p *Ping) Handle(ctx context.Context, arc *app.RequestContext) (any, error) {
 	return *p, nil

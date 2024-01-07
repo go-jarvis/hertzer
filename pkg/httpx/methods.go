@@ -5,7 +5,8 @@ import (
 	"strings"
 )
 
-type Method struct {
+type Methoder interface {
+	Method() string
 }
 
 type MethodGet struct{}

@@ -2,10 +2,13 @@ package server
 
 import (
 	"context"
+	"reflect"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/cloudwego/hertz/pkg/route"
+	"github.com/go-jarvis/herts/pkg/httpx"
+	"github.com/go-jarvis/herts/pkg/reflectx"
 )
 
 type RouterGroup struct {
@@ -94,6 +97,37 @@ func (r *RouterGroup) handle(opers ...Operator) {
 			arc.JSON(consts.StatusOK, ret)
 		}
 
-		r.r.Handle(oper.Method(), oper.Route(), fn)
+		m, p := getHttpBasic(oper)
+		r.r.Handle(m, p, fn)
 	}
+}
+
+func getHttpBasic(oper any) (method, path string) {
+
+	if oper, ok := oper.(httpx.Methoder); ok {
+		method = oper.Method()
+	}
+
+	if oper, ok := oper.(Router); ok {
+		path = oper.Route()
+	}
+
+	if path != "" && method != "" {
+		return method, path
+	}
+
+	// get path by use reflect
+	rt := reflect.TypeOf(oper)
+	rt = reflectx.Deref(rt)
+	for i := 0; i < rt.NumField(); i++ {
+		ft := rt.Field(i)
+		// 取一个
+		val, ok := ft.Tag.Lookup("route")
+		if ok {
+			path = val
+			break
+		}
+	}
+
+	return
 }
