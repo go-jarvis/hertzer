@@ -6,11 +6,16 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"github.com/cloudwego/hertz/pkg/protocol/consts"
+
 	"github.com/go-jarvis/herts"
+	"github.com/go-jarvis/herts/pkg/common/resp"
 	"github.com/go-jarvis/herts/pkg/httpx"
 )
 
 func main() {
+
+	// err := errors.ErrBadPoolConn
 
 	s := &herts.Server{
 		Listen: ":8081",
@@ -34,8 +39,7 @@ func main() {
 	s.AddGroup(v1)
 	v1.AddGroup(v2)
 
-	err := s.Run()
-	if err != nil {
+	if err := s.Run(); err != nil {
 		panic(err)
 	}
 }
@@ -65,8 +69,23 @@ type Address struct {
 
 func (p *Ping) Handle(ctx context.Context, arc *app.RequestContext) (any, error) {
 	fmt.Println("handle ping")
-	// return *p, nil
-	return nil, nil
+
+	// (1) return response and nil error
+	// return p, nil
+
+	// (2) return response and error
+	// err := fmt.Errorf("Origin Error")
+	// return p, err
+
+	// (3) return status response and status error
+	// serr := errors.New(err, *p)
+	// serr = serr.SetMessage("Error Message")
+	// ret := resp.NewStatusResponse(consts.StatusBadGateway, *p)
+	// return ret, serr
+
+	// (4) return status response and nil error
+	ret := resp.NewStatusResponse(consts.StatusAccepted, *p)
+	return ret, nil
 }
 
 func (Ping) PreHandlers() []app.HandlerFunc {
