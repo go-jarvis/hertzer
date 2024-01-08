@@ -1,4 +1,4 @@
-package herts
+package hertzer
 
 import (
 	"context"
@@ -7,11 +7,11 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/cloudwego/hertz/pkg/route"
-	"github.com/go-jarvis/herts/pkg/common/errors"
-	"github.com/go-jarvis/herts/pkg/common/resp"
-	"github.com/go-jarvis/herts/pkg/httpx"
-	"github.com/go-jarvis/herts/pkg/operator"
-	"github.com/go-jarvis/herts/pkg/reflectx"
+	"github.com/go-jarvis/hertzer/pkg/common/errors"
+	"github.com/go-jarvis/hertzer/pkg/common/resp"
+	"github.com/go-jarvis/hertzer/pkg/httpx"
+	"github.com/go-jarvis/hertzer/pkg/operator"
+	"github.com/go-jarvis/hertzer/pkg/reflectx"
 )
 
 type RouterGroup struct {

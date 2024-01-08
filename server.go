@@ -1,10 +1,10 @@
-package herts
+package hertzer
 
 import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/config"
-	"github.com/go-jarvis/herts/pkg/operator"
+	"github.com/go-jarvis/hertzer/pkg/operator"
 )
 
 type Server struct {

@@ -8,16 +8,16 @@ import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 
-	"github.com/go-jarvis/herts"
-	"github.com/go-jarvis/herts/pkg/common/resp"
-	"github.com/go-jarvis/herts/pkg/httpx"
+	"github.com/go-jarvis/hertzer"
+	"github.com/go-jarvis/hertzer/pkg/common/resp"
+	"github.com/go-jarvis/hertzer/pkg/httpx"
 )
 
 func main() {
 
 	// err := errors.ErrBadPoolConn
 
-	s := &herts.Server{
+	s := &hertzer.Server{
 		Listen: ":8081",
 	}
 
@@ -30,8 +30,8 @@ func main() {
 
 	s.Handle(&Ping{})
 
-	v1 := herts.NewRouterGroup("/v1")
-	v2 := herts.NewRouterGroup("/v2")
+	v1 := hertzer.NewRouterGroup("/v1")
+	v2 := hertzer.NewRouterGroup("/v2")
 
 	v2.Handle(&Ping{})
 	v1.Handle(&Ping{})

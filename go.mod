@@ -1,4 +1,4 @@
-module github.com/go-jarvis/herts
+module github.com/go-jarvis/hertzer
 
 go 1.21.5
 

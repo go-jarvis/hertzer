@@ -3,7 +3,7 @@ package operator
 import (
 	"reflect"
 
-	"github.com/go-jarvis/herts/pkg/reflectx"
+	"github.com/go-jarvis/hertzer/pkg/reflectx"
 )
 
 // OperatorFactory to create new operator
