@@ -41,7 +41,7 @@ func main() {
 }
 ```
 
-## 2. Router Handler
+## 3. Router Handler
 
 Main Router HandlerFunc
 
@@ -77,7 +77,7 @@ So that, the default handler will be like:
 r.Handle("POST","/ping/:name", handler)
 ```
 
-### 2.1. Hanlder's HandlerFuncChain  
+### 3.1. Hanlder's HandlerFuncChain  
 
 Add the `PreHandlers` and `PostHandlers` to combine the HandlerFunc Chain.  NOTE: `PreHandlers` and `PostHandlers` as **optional**.
 
@@ -106,7 +106,7 @@ r.Handle("POST","/ping/:name", [pre...,] handler, [post...])
 
 As metioned before, the RouterGroups like the carriages of a train. They are not only mounted one by one, and but also can be mounted to any RouterGroup. 
 
-**NOTE**:  The **Mounted Ring** is forbidden.
+**NOTE**:  The **Mounted Ring** is **forbidden**. And `Directed Acyclic Graph(DAG)` of RouterGroups are required.
 
 ![](./dag.jpg)
 
