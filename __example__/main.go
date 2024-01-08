@@ -65,7 +65,8 @@ type Address struct {
 
 func (p *Ping) Handle(ctx context.Context, arc *app.RequestContext) (any, error) {
 	fmt.Println("handle ping")
-	return *p, nil
+	// return *p, nil
+	return nil, nil
 }
 
 func (Ping) PreHandlers() []app.HandlerFunc {

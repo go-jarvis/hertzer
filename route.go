@@ -96,6 +96,12 @@ func (r *RouterGroup) handlerFunc(oper operator.Operator) app.HandlerFunc {
 			arc.JSON(consts.StatusInternalServerError, err.Error())
 			return
 		}
+
+		if ret == nil {
+			// do nothing
+			return
+		}
+
 		arc.JSON(consts.StatusOK, ret)
 	}
 }
