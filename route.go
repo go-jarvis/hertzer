@@ -87,7 +87,7 @@ func (r *RouterGroup) handlerFunc(oper operator.Operator) app.HandlerFunc {
 		}
 
 		// bind data
-		err := arc.Bind(oper)
+		err := arc.BindAndValidate(oper)
 		if err != nil {
 			arc.JSON(consts.StatusBadRequest, err.Error())
 			return
