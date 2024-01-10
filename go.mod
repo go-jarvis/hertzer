@@ -2,7 +2,10 @@ module github.com/go-jarvis/hertzer
 
 go 1.21.5
 
-require github.com/cloudwego/hertz v0.7.3
+require (
+	github.com/cloudwego/hertz v0.7.3
+	github.com/go-jarvis/slogr v0.1.2
+)
 
 require (
 	github.com/bytedance/go-tagexpr/v2 v2.9.2 // indirect

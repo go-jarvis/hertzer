@@ -1,4 +1,5 @@
-
+### GET skip log
+POST http://127.0.0.1:8081/api/ping/wangwu
 
 ### GET
 POST http://127.0.0.1:8081/api/ping/zhangsan?age=18
