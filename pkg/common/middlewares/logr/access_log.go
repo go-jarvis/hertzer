@@ -12,6 +12,12 @@ type AcceccLogConfig struct {
 	SkipPaths []string
 }
 
+var defaultLogConfig = AcceccLogConfig{}
+
+func AccessLog() app.HandlerFunc {
+	return AccessLogWithConfig(defaultLogConfig)
+}
+
 func AccessLogWithConfig(config AcceccLogConfig) app.HandlerFunc {
 	var skip map[string]struct{}
 	if length := len(config.SkipPaths); length != 0 {
