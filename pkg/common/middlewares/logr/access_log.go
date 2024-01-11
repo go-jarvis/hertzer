@@ -49,7 +49,7 @@ func AccessLoggerWithConfig(config AcceccLoggerConfig) app.HandlerFunc {
 		ctx.Next(c)
 		end := time.Now()
 
-		latency := end.Sub(start).Microseconds
+		latency := end.Sub(start).Milliseconds
 
 		log := FromContext(c)
 		log.With(
