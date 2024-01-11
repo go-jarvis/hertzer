@@ -7,4 +7,4 @@ tidy:
 	go mod tidy
 
 version:
-	git add . && git commit -m "chore: bump version to $(VERSION)" && git tag $(VERSION)
+	git add . && git commit -m "chore: bump version to $(VERSION)" && git tag $(VERSION) && git push origin $(VERSION)
