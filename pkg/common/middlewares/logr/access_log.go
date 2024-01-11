@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/google/uuid"
 )
 
 type AcceccLoggerConfig struct {
@@ -48,10 +49,13 @@ func AccessLoggerWithConfig(config AcceccLoggerConfig) app.HandlerFunc {
 		start := time.Now()
 		ctx.Next(c)
 		end := time.Now()
-
 		latency := end.Sub(start).Milliseconds
 
 		log := FromContext(c)
+
+		log_id := uuid.New().String()
+		log = log.With("log_id", log_id)
+
 		log.With(
 			"status", ctx.Response.StatusCode(),
 			"cost", fmt.Sprintf("%dms", latency()),

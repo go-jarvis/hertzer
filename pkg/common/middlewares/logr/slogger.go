@@ -7,26 +7,27 @@ import (
 	"github.com/go-jarvis/slogr"
 )
 
-type slogrKeytype int
-
-var slogrKey slogrKeytype = 0
-
 // WithContext inject slogr into context
 func WithContext(ctx context.Context, log slogr.Logger) context.Context {
-	return context.WithValue(ctx, slogrKey, log)
+	return slogr.WithContext(ctx, log)
 }
 
 // FromContext exact slogr from context
 func FromContext(ctx context.Context) slogr.Logger {
-	log, ok := ctx.Value(slogrKey).(slogr.Logger)
-	if ok {
-		return log
+
+	log := slogr.FromContext(ctx)
+
+	// 如果为Discard， 则返回默认的logger
+	if _, ok := log.(*slogr.Discard); ok {
+		return slogr.Default()
 	}
-	return slogr.Default()
+
+	return log
 }
 
 // WithSLogger inject slogr.Logger in middleware
 func WithSLogger(log slogr.Logger) app.HandlerFunc {
+
 	return func(c context.Context, ctx *app.RequestContext) {
 		c = WithContext(c, log)
 		ctx.Next(c)

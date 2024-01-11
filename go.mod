@@ -5,6 +5,7 @@ go 1.21.5
 require (
 	github.com/cloudwego/hertz v0.7.3
 	github.com/go-jarvis/slogr v0.1.5
+	github.com/google/uuid v1.5.0
 )
 
 require (
