@@ -8,17 +8,25 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
-type AcceccLogConfig struct {
+type AcceccLoggerConfig struct {
 	SkipPaths []string
 }
 
-var defaultLogConfig = AcceccLogConfig{}
-
-func AccessLog() app.HandlerFunc {
-	return AccessLogWithConfig(defaultLogConfig)
+var defaultLogConfig = AcceccLoggerConfig{
+	SkipPaths: []string{
+		"/liveness",
+		"/readiness",
+		"/metrics",
+		"/healthz",
+		"/readyz",
+	},
 }
 
-func AccessLogWithConfig(config AcceccLogConfig) app.HandlerFunc {
+func AccessLogger() app.HandlerFunc {
+	return AccessLoggerWithConfig(defaultLogConfig)
+}
+
+func AccessLoggerWithConfig(config AcceccLoggerConfig) app.HandlerFunc {
 	var skip map[string]struct{}
 	if length := len(config.SkipPaths); length != 0 {
 		skip = make(map[string]struct{}, length)
@@ -47,9 +55,9 @@ func AccessLogWithConfig(config AcceccLogConfig) app.HandlerFunc {
 		log.With(
 			"status", ctx.Response.StatusCode(),
 			"cost", fmt.Sprintf("%dms", latency()),
-			"method", string(ctx.Request.Header.Method()),
-			"full_path", full_path,
-			"client_ip", ctx.ClientIP(),
+			"request_method", string(ctx.Request.Header.Method()),
+			"request_uri", full_path,
+			"remote_addr", ctx.ClientIP(),
 			"host", string(ctx.Request.Host()),
 		).Info("access_log")
 	}

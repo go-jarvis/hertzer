@@ -16,7 +16,7 @@ func main() {
 	}
 
 	log := slogr.Default()
-	logc := logr.AcceccLogConfig{
+	logc := logr.AcceccLoggerConfig{
 		SkipPaths: []string{
 			"/api/ping/wangwu",
 		},
@@ -24,7 +24,7 @@ func main() {
 
 	s.Use(
 		logr.WithSLogger(log),
-		logr.AccessLogWithConfig(logc),
+		logr.AccessLoggerWithConfig(logc),
 	)
 
 	// 注册路由

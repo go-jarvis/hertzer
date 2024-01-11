@@ -4,7 +4,7 @@ go 1.21.5
 
 require (
 	github.com/cloudwego/hertz v0.7.3
-	github.com/go-jarvis/slogr v0.1.2
+	github.com/go-jarvis/slogr v0.1.3
 )
 
 require (

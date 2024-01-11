@@ -4,6 +4,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/config"
+	"github.com/go-jarvis/hertzer/pkg/common/middlewares/monitor"
 	"github.com/go-jarvis/hertzer/pkg/operator"
 )
 
@@ -36,9 +37,11 @@ func (s *Server) defaultRouterGroup() {
 func (s *Server) initialize() {
 
 	s.h = server.Default(s.opts...)
+	s.Handle(&monitor.Liveness{})
 
 	s.defaultRouterGroup()
 	s.r.r = s.h.Group("/")
+
 	s.r.initialize()
 }
 

@@ -11,8 +11,8 @@ type slogrKeytype int
 
 var slogrKey slogrKeytype = 0
 
-// withContext inject slogr into context
-func withContext(ctx context.Context, log slogr.Logger) context.Context {
+// WithContext inject slogr into context
+func WithContext(ctx context.Context, log slogr.Logger) context.Context {
 	return context.WithValue(ctx, slogrKey, log)
 }
 
@@ -28,7 +28,7 @@ func FromContext(ctx context.Context) slogr.Logger {
 // WithSLogger inject slogr.Logger in middleware
 func WithSLogger(log slogr.Logger) app.HandlerFunc {
 	return func(c context.Context, ctx *app.RequestContext) {
-		c = withContext(c, log)
+		c = WithContext(c, log)
 		ctx.Next(c)
 	}
 }
