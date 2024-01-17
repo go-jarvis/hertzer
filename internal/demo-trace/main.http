@@ -1,0 +1,9 @@
+
+### GET
+GET http://127.0.0.1:8080/liveness
+# Traceparent: 00-20e8e60ccb6f4d13e496f07adeb860f0-54a6affcf5edb578-01
+
+### GET
+GET http://127.0.0.1:8080/ping
+Traceparent: 00-85c5e5fa39ea47e02b8a97c75e2a96d2-a431dd7f64053871-01
+

@@ -1,7 +1,7 @@
 VERSION ?= v$(shell cat .version)
 
 up: tidy
-	go run ./__example__/
+	go run ./example/
 
 tidy:
 	go mod tidy
