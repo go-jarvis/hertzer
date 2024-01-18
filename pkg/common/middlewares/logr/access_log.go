@@ -7,6 +7,7 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type AcceccLoggerConfig struct {
@@ -37,32 +38,47 @@ func AccessLoggerWithConfig(config AcceccLoggerConfig) app.HandlerFunc {
 		}
 	}
 
-	return func(c context.Context, ctx *app.RequestContext) {
+	return func(ctx context.Context, ac *app.RequestContext) {
 
-		full_path := string(ctx.Request.URI().PathOriginal())
+		full_path := string(ac.Request.URI().PathOriginal())
 		if _, isSkip := skip[full_path]; isSkip {
-			ctx.Next(c)
+			ac.Next(ctx)
 			return
 		}
 
 		// start log
 		start := time.Now()
-		ctx.Next(c)
+		ac.Next(ctx) // do next handler
+
 		end := time.Now()
-		latency := end.Sub(start).Milliseconds
+		latency := end.Sub(start).Milliseconds // cost time
 
-		log := FromContext(c)
+		log := FromContext(ctx)
 
-		log_id := uuid.New().String()
-		log = log.With("log_id", log_id)
+		trace_id := traceid(ctx) // generate trace id
+		log = log.With("trace_id", trace_id)
 
 		log.With(
-			"status", ctx.Response.StatusCode(),
+			"status", ac.Response.StatusCode(),
 			"cost", fmt.Sprintf("%dms", latency()),
-			"request_method", string(ctx.Request.Header.Method()),
+			"request_method", string(ac.Request.Header.Method()),
 			"request_uri", full_path,
-			"remote_addr", ctx.ClientIP(),
-			"host", string(ctx.Request.Host()),
+			"remote_addr", ac.ClientIP(),
+			"host", string(ac.Request.Host()),
 		).Info("access_log")
 	}
+}
+
+// traceid return trace id from opentelemetry Trace ID
+// or generate a new one by uuid
+func traceid(ctx context.Context) string {
+	spanctx := trace.SpanContextFromContext(ctx)
+
+	if spanctx.IsValid() {
+		if spanctx.TraceID().IsValid() {
+			return spanctx.TraceID().String()
+		}
+	}
+
+	return uuid.New().String()
 }
