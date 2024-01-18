@@ -37,6 +37,8 @@ github.com/fsnotify/fsnotify v1.7.0 h1:8JEhPFa5W2WU7YfeZzPNqzMP6Lwt7L2715Ggo0nos
 github.com/fsnotify/fsnotify v1.7.0/go.mod h1:40Bi/Hjc2AVfZrqy+aj+yEI+/bRxZnMJyTJwOpGvigM=
 github.com/go-jarvis/slogr v0.1.5 h1:fpYnR8l5npwU9Q+pmLyKWn0YBqS+2M0ryLNM0BydFlc=
 github.com/go-jarvis/slogr v0.1.5/go.mod h1:PxQ2SeUDIOojKyyzq3Sw1VG9BvraC7mF+HTDECE+1RQ=
+github.com/go-jarvis/slogr v0.1.7 h1:j/+kI0mgavm3fd6g7lnle0bn3qQpmELYpX6mRAZW3h8=
+github.com/go-jarvis/slogr v0.1.7/go.mod h1:PxQ2SeUDIOojKyyzq3Sw1VG9BvraC7mF+HTDECE+1RQ=
 github.com/go-logr/logr v1.2.2/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbVz/1A=
 github.com/go-logr/logr v1.4.1 h1:pKouT5E8xu9zeFC39JXRDukb6JFQPXM5p5I91188VAQ=
 github.com/go-logr/logr v1.4.1/go.mod h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=

@@ -46,17 +46,15 @@ func AccessLoggerWithConfig(config AcceccLoggerConfig) app.HandlerFunc {
 			return
 		}
 
+		log := FromContext(ctx)
+		ctx, log = log.WithContext(ctx, "trace_id", traceid(ctx))
+
 		// start log
 		start := time.Now()
 		ac.Next(ctx) // do next handler
 
 		end := time.Now()
 		latency := end.Sub(start).Milliseconds // cost time
-
-		log := FromContext(ctx)
-
-		trace_id := traceid(ctx) // generate trace id
-		log = log.With("trace_id", trace_id)
 
 		log.With(
 			"status", ac.Response.StatusCode(),

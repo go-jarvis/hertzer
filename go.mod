@@ -4,7 +4,7 @@ go 1.21.5
 
 require (
 	github.com/cloudwego/hertz v0.8.0
-	github.com/go-jarvis/slogr v0.1.5
+	github.com/go-jarvis/slogr v0.1.7
 	github.com/google/uuid v1.5.0
 	go.opentelemetry.io/otel v1.21.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.21.0
