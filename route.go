@@ -7,8 +7,6 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/cloudwego/hertz/pkg/route"
-	"github.com/go-jarvis/hertzer/pkg/common/errors"
-	"github.com/go-jarvis/hertzer/pkg/common/resp"
 	"github.com/go-jarvis/hertzer/pkg/httpx"
 	"github.com/go-jarvis/hertzer/pkg/operator"
 	"github.com/go-jarvis/hertzer/pkg/reflectx"
@@ -77,62 +75,37 @@ func (r *RouterGroup) Handle(opers ...operator.Operator) {
 	r.operators = append(r.operators, opers...)
 }
 
+// handleFunc register app.HandlerFunc
+// 1. set default content-type
+// 2. bind and validate operator
+// 3. change the log caller depth
 func (r *RouterGroup) handlerFunc(oper operator.Operator) app.HandlerFunc {
-	return func(ctx context.Context, arc *app.RequestContext) {
 
+	return func(ctx context.Context, arc *app.RequestContext) {
 		// set default content-type
 		v := arc.Request.Header.Get("Content-Type")
 		if v == "" {
 			arc.Request.Header.Set("Content-Type", "application/json")
 		}
 
-		// bind data
+		// // Todo: caller
+		// // 1. 处理 log 深度
+		// log := slogr.FromContext(c)
+		// if l, ok := log.(*slogr.SLogger); ok {
+		// 	// l.SetCaller(l.GetCaller() + -1)
+		// 	// l.SetCaller(3)
+		// 	// fmt.Println("l.GetCaller()", l.GetCaller())
+		// 	c = slogr.WithContext(c, l)
+		// }
+
+		// 2. 处理 handler
 		err := arc.BindAndValidate(oper)
 		if err != nil {
 			arc.JSON(consts.StatusBadRequest, err.Error())
 			return
 		}
 
-		// 路由处理
-		statusCode := 0
-
-		ret, err := oper.Handle(ctx, arc)
-		if resp, ok := resp.IsStatusResponse(ret); ok {
-			statusCode = resp.Code()
-			ret = resp.Meta()
-		}
-
-		// 错误返回
-		if err != nil {
-			// set default code
-			if statusCode == 0 {
-				statusCode = consts.StatusInternalServerError
-			}
-
-			// if err is StatusError, set code and return
-			if serr, ok := errors.AsStatusError(err); ok {
-				serr.SetCode(statusCode)
-				arc.JSON(statusCode, serr.JSON())
-				return
-			}
-
-			arc.JSON(statusCode, err.Error())
-			return
-		}
-
-		// set default code
-		if statusCode == 0 {
-			statusCode = consts.StatusOK // 200
-		}
-
-		// if ret is nil, set code and return nil
-		if ret == nil {
-			arc.SetStatusCode(statusCode)
-			return
-		}
-
-		// if ret is StatusResponse, set code and return
-		arc.JSON(statusCode, ret)
+		oper.Handle(ctx, arc)
 	}
 }
 
@@ -144,24 +117,10 @@ func (r *RouterGroup) handle(opers ...operator.Operator) {
 		// get method and path
 		m, p := getHttpBasic(oper)
 
-		// initialize handler hfns
-		hfns := []app.HandlerFunc{}
-
-		// get pre handler funcs if exist
-		if pre, ok := oper.(operator.PreHandlersOperator); ok {
-			hfns = append(hfns, pre.PreHandlers()...)
-		}
-
 		// main: registery handler func
 		hfn := r.handlerFunc(oper)
-		hfns = append(hfns, hfn)
 
-		// get post handler funcs if exist
-		if post, ok := oper.(operator.PostHandlersOperator); ok {
-			hfns = append(hfns, post.PostHandlers()...)
-		}
-
-		r.r.Handle(m, p, hfns...)
+		r.r.Handle(m, p, hfn)
 	}
 }
 

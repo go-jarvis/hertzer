@@ -5,9 +5,8 @@ import (
 	"fmt"
 
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
-	"github.com/go-jarvis/hertzer/pkg/common/resp"
 	"github.com/go-jarvis/hertzer/pkg/httpx"
+	"github.com/go-jarvis/slogr"
 )
 
 type Ping struct {
@@ -33,8 +32,10 @@ type Address struct {
 // 	return http.MethodGet
 // }
 
-func (p *Ping) Handle(ctx context.Context, arc *app.RequestContext) (any, error) {
-	fmt.Println("handle ping")
+func (p *Ping) Handle(ctx context.Context, arc *app.RequestContext) {
+	// fmt.Println("handle ping")
+	log := slogr.FromContext(ctx)
+	log.Info("handle ping")
 
 	// (1) return response and nil error
 	// return p, nil
@@ -50,8 +51,10 @@ func (p *Ping) Handle(ctx context.Context, arc *app.RequestContext) (any, error)
 	// return ret, serr
 
 	// (4) return status response and nil error
-	ret := resp.NewStatusResponse(consts.StatusAccepted, *p)
-	return ret, nil
+	// ret := resp.NewStatusResponse(consts.StatusAccepted, *p)
+	// return ret, nil
+	// arc.JSON(200, ret)
+	arc.JSON(200, p)
 }
 
 func (Ping) PreHandlers() []app.HandlerFunc {

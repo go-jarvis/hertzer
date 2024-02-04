@@ -11,6 +11,6 @@ type Liveness struct {
 	httpx.MethodGet `route:"/liveness"`
 }
 
-func (Liveness) Handle(ctx context.Context, arc *app.RequestContext) (any, error) {
-	return "ok", nil
+func (Liveness) Handle(ctx context.Context, arc *app.RequestContext) {
+	arc.String(200, "ok")
 }

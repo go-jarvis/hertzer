@@ -7,15 +7,8 @@ import (
 )
 
 type Operator interface {
-	Handle(ctx context.Context, arc *app.RequestContext) (any, error)
-}
-
-type PreHandlersOperator interface {
-	PreHandlers() []app.HandlerFunc
-}
-
-type PostHandlersOperator interface {
-	PostHandlers() []app.HandlerFunc
+	// HandlerFunc
+	Handle(ctx context.Context, arc *app.RequestContext)
 }
 
 type MethodOperator interface {

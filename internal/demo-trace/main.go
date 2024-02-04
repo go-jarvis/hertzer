@@ -33,7 +33,7 @@ type PingPong struct {
 	httpx.MethodGet `route:"/ping"`
 }
 
-func (PingPong) Handle(ctx context.Context, arc *app.RequestContext) (any, error) {
+func (PingPong) Handle(ctx context.Context, arc *app.RequestContext) {
 
 	name := "ping-pong"
 	spanctx, span := opentrace.SpanStart(ctx, name)
@@ -44,7 +44,7 @@ func (PingPong) Handle(ctx context.Context, arc *app.RequestContext) (any, error
 	do(spanctx)
 	do2(spanctx)
 
-	return "pong", nil
+	// return "pong", nil
 }
 
 func do(ctx context.Context) {
