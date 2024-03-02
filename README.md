@@ -1,3 +1,5 @@
+
+
 # hertzer
 
 1. a gin webserver which bases on [cloudwebgo/hertz](http://github.com/cloudwego/hertz)
@@ -45,7 +47,7 @@ func main() {
 
 Main Router HandlerFunc
 
-```go 
+```go
 type Ping struct {
 	httpx.MethodPost `route:"/ping/:name"` // define method and path
 
@@ -77,7 +79,7 @@ So that, the default handler will be like:
 r.Handle("POST","/ping/:name", handler)
 ```
 
-### 3.1. Hanlder's HandlerFuncChain  
+### 3.1. Hanlder's HandlerFuncChain
 
 Add the `PreHandlers` and `PostHandlers` to combine the HandlerFunc Chain.  NOTE: `PreHandlers` and `PostHandlers` as **optional**.
 
@@ -95,7 +97,7 @@ func (Ping) PostHandlers() []app.HandlerFunc {
 }
 ```
 
-The Registered Router will be like 
+The Registered Router will be like
 
 ```go
 // r.Handle(httpMethod, relativePath string, handlers ...app.HandlerFunc)
@@ -104,7 +106,7 @@ r.Handle("POST","/ping/:name", [pre...,] handler, [post...])
 
 ### 3.2 RouterGroup
 
-As metioned before, the RouterGroups like the carriages of a train. They are not only mounted one by one, and but also can be mounted to any RouterGroup. 
+As metioned before, the RouterGroups like the carriages of a train. They are not only mounted one by one, and but also can be mounted to any RouterGroup.
 
 **NOTE**:  The **Mounted Ring** is **forbidden**. And `Directed Acyclic Graph(DAG)` of RouterGroups are required.
 
@@ -193,3 +195,12 @@ serr = serr.SetMessage("Error Message")
 
 By default the `Message` will be the HTTP Status Message/Define if you don't `SetMessage`
 
+
+## Wallaby.js
+
+[![Wallaby.js](https://img.shields.io/badge/wallaby.js-powered-blue.svg?style=for-the-badge&logo=github)](https://wallabyjs.com/oss/)
+
+This repository contributors are welcome to use
+[Wallaby.js OSS License](https://wallabyjs.com/oss/) to get
+test results immediately as you type, and see the results in
+your editor right next to your code.
